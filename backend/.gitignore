@@ -1,0 +1,23 @@
+# Fichiers Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environnement virtuel
+venv/
+.env
+*.env
+
+# Logs
+*.log
+app.log
+utils/app.log
+
+# Fichiers système / backup
+.DS_Store
+*.old
+
+# Docker
+Dockerfile
+.dockerignore
