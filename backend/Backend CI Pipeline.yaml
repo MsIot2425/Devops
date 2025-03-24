@@ -17,7 +17,7 @@ jobs:
       postgres:
         image: postgres:13
         env:
-          POSTGRES_DB: msiot_db
+          POSTGRES_DB: reserkine 
           POSTGRES_USER: testuser
           POSTGRES_PASSWORD: testpassword
         ports:
@@ -41,7 +41,7 @@ jobs:
         cd backend
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pytest pytest-cov pylint
+        pip install pytest pytest-cov pylint psycopg2-binary
 
     - name: Lint with Pylint
       run: |
@@ -50,7 +50,7 @@ jobs:
 
     - name: Run Backend Tests
       env:
-        DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/msiot_db
+        DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/reserkine
       run: |
         cd backend
         # Exécuter les tests existants
