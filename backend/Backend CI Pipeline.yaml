@@ -1,0 +1,68 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: msiot_db
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.10'
+    
+    - name: Install Dependencies
+      run: |
+        cd backend
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov pylint
+
+    - name: Lint with Pylint
+      run: |
+        cd backend
+        pylint $(find . -name "*.py" | grep -v "test\|old")
+
+    - name: Run Backend Tests
+      env:
+        DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/msiot_db
+      run: |
+        cd backend
+        # Exécuter les tests existants
+        python -m pytest test.py
+
+    - name: Check Code Coverage
+      run: |
+        cd backend
+        python -m pytest --cov=. --cov-report=xml
+
+    - name: Upload Coverage
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./backend/coverage.xml
+        flags: backend
