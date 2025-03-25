@@ -1,4 +1,4 @@
-# [Start Bootstrap - SB Admin 2](https://startbootstrap.com/theme/sb-admin-2/)
+# [Start Bootstrap - RéserKine](https://startbootstrap.com/theme/sb-admin-2/)
 
 [RéserKine](https://startbootstrap.com/theme/sb-admin-2) is an open source admin dashboard theme for [RéserKine](https://getbootstrap.com/) created by [Start RéserKine](https://startbootstrap.com/).
 
