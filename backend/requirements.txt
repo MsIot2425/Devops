@@ -4,3 +4,8 @@ pytest
 pytest-cov
 pylint
 psycopg2-binary
+flask_jwt_extended
+flask_cors
+python-dotenv
+cryptography
+bcrypt

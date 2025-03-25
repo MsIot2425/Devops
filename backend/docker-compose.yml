@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres
+    restart: always
+    container_name: reserkine_postgres_db
+    environment:
+      POSTGRES_DB: reserkine
+      POSTGRES_USER: devops
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - reserkine-net
+
+  backend:
+    build: .
+    container_name: flask_backend
+    ports:
+      - "5000:5000"
+    command: python app.py
+    environment:
+      DB_HOST: db
+      DB_NAME: reserkine
+      DB_USER: devops
+      DB_PASSWORD: root
+      JWT_SECRET_KEY: "5c5d3cc294740276032929129a062c340e2c511f792e37c417cad6183459eb76"
+      FERNET_KEY: "e6iTcH9h3N0qaUEFUwpZWgJpKohJdlun2hXwqaIrZA0="
+    depends_on:
+      - db
+    networks:
+      - reserkine-net
+
+volumes:
+  postgres_data:
+
+networks:
+  reserkine-net:
