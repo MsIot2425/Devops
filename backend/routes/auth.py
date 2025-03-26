@@ -13,19 +13,22 @@ def register():
     username = data.get('username')
     email = data.get('email')
     password = data.get('password')
+    telephone = data.get('telephone')
 
-    if not username or not email or not password:
+    if not username or not email or not password or not telephone:
         logger.warning("Champs manquants lors de l'enregistrement.")
         return jsonify({"message": "Tous les champs sont requis"}), 400
 
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    #hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
 
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)",
-            (username, email, hashed_password)
+            "INSERT INTO users (username, email, password, telephone) VALUES (%s, %s, %s, %s)",
+            (username, email, hashed_password, telephone)
         )
         conn.commit()
         cursor.close()
@@ -52,11 +55,12 @@ def login():
     cursor.close()
     conn.close()
 
-    if user and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
-        encrypted_id = encrypt_id(user['id'])
+    if user and bcrypt.checkpw(password.encode('utf-8'), user[3].encode('utf-8')):  # mot de passe
+        encrypted_id = encrypt_id(user[0])  # id
         access_token = create_access_token(identity=encrypted_id)
         logger.info(f"Utilisateur {username} connecté avec succès.")
         return jsonify({"access_token": access_token}), 200
 
     logger.warning(f"Tentative de connexion échouée pour {username}.")
     return jsonify({"message": "Identifiants incorrects"}), 401
+
