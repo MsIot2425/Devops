@@ -64,3 +64,32 @@ def login():
     logger.warning(f"Tentative de connexion échouée pour {username}.")
     return jsonify({"message": "Identifiants incorrects"}), 401
 
+@auth.route('/login-kine', methods=['POST'])
+def login_kine():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({"message": "Nom d'utilisateur et mot de passe requis"}), 400
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM kine WHERE username = %s", (username,))
+        kine = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if kine and bcrypt.checkpw(password.encode('utf-8'), kine[3].encode('utf-8')):  # password = 4e champ
+            encrypted_id = encrypt_id(kine[0])  # id = 1er champ
+            access_token = create_access_token(identity=encrypted_id)
+            logger.info(f"Kiné {username} connecté avec succès.")
+            return jsonify({"access_token": access_token}), 200
+
+        logger.warning(f"Connexion échouée pour kiné {username}.")
+        return jsonify({"message": "Identifiants incorrects"}), 401
+
+    except Exception as e:
+        logger.error(f"Erreur login kiné : {e}")
+        return jsonify({"message": "Erreur serveur"}), 500

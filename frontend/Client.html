@@ -32,6 +32,16 @@
 
 <body class="index-page">
 
+
+
+  <script>
+  const token = localStorage.getItem("token");
+  if (!token) {
+    // Si pas connecté, redirection vers la page de login
+    window.location.href = "loginClient.html";
+  }
+  </script>
+
   <header id="header" class="header sticky-top">
 
     <div class="topbar d-flex align-items-center">
@@ -341,7 +351,7 @@
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-        <form action="forms/appointment.php" method="post" role="form" class="php-email-form">
+        <form id="appointmentForm" class="php-email-form">
           <div class="row">
             <div class="col-md-4 form-group">
               <input type="text" name="name" class="form-control" id="name" placeholder="Votre nom" required="">
@@ -1058,6 +1068,56 @@
 
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
+
+
+<script>
+document.querySelector("#appointmentForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Veuillez vous connecter avant de prendre rendez-vous.");
+    window.location.href = "loginClient.html";
+    return;
+  }
+
+  const data = {
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    phone: document.getElementById("phone").value,
+    date: document.getElementById("date").value,
+    department: document.getElementById("department").value,
+    doctor: document.getElementById("doctor").value,
+    message: document.querySelector("textarea[name='message']").value
+  };
+
+  try {
+    const res = await fetch("http://localhost:5000/reservations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    });
+
+    const json = await res.json();
+
+    if (res.ok) {
+      alert(json.message || "Réservation enregistrée !");
+      document.getElementById("appointmentForm").reset();
+    } else {
+      alert(json.message || "Erreur lors de la réservation.");
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Erreur de connexion au serveur.");
+  }
+});
+</script>
+
 
 </body>
 

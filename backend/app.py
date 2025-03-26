@@ -20,7 +20,7 @@ CORS(app)
 
 # Enregistrer les Blueprints
 app.register_blueprint(auth, url_prefix='/auth')
-app.register_blueprint(reservations, url_prefix='/reservations')
+app.register_blueprint(reservations)
 app.register_blueprint(timeslots, url_prefix='/timeslots')
 
 # Route pour la page d'accueil
